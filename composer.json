@@ -1,0 +1,16 @@
+{
+    "name": "glen/slack-unfurl-jira",
+    "description": "Jira links unfurler for slack-unfurl",
+    "license": "MIT",
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "JiraSlackUnfurl\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.1.3"
+    }
+}
