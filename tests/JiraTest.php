@@ -1,7 +1,8 @@
 <?php
 
-namespace SlackUnfurl\Test;
+namespace JiraSlackUnfurl\Test;
 
+use chobie\Jira;
 use JiraSlackUnfurl\Event\Subscriber\JiraUnfurler;
 use Psr\Log\NullLogger;
 use SlackUnfurl\Event\UnfurlEvent;
@@ -10,7 +11,11 @@ class JiraTest extends TestCase
 {
     public function test1()
     {
-        $unfurler = new JiraUnfurler('jira.example.net', new NullLogger());
+        $api = new Jira\Api(
+            getenv('JIRA_URL'),
+            new Jira\Api\Authentication\Basic(getenv('JIRA_USERNAME'), getenv('JIRA_PASSWORD'))
+        );
+        $unfurler = new JiraUnfurler($api, 'jira.example.net', new NullLogger());
         $data = [
             'type' => 'link_shared',
             'user' => 'Uxxxxxxxx',
@@ -24,7 +29,7 @@ class JiraTest extends TestCase
             ],
         ];
         $event = new UnfurlEvent($data);
-        $unfurl = $unfurler->unfurl($event);
-        dump($unfurl);
+        $unfurler->unfurl($event);
+        dump($event->getUnfurls());
     }
 }
