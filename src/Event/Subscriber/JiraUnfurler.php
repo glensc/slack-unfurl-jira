@@ -58,7 +58,7 @@ class JiraUnfurler implements EventSubscriberInterface
         }
 
         return [
-            'title' => "<$url|#{$issue['key']}>: {$issue['fields']['summary']}",
+            'title' => "<$url|{$issue['key']}>: {$issue['fields']['summary']}",
         ];
     }
 
