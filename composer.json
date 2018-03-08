@@ -11,7 +11,8 @@
         }
     },
     "require": {
-        "php": "^7.1.3"
+        "php": "^7.1.3",
+        "chobie/jira-api-restclient": "^2.0@dev"
     },
     "require-dev": {
         "glen/slack-unfurl": "~0.4.0"

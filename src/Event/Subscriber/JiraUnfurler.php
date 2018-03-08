@@ -2,6 +2,7 @@
 
 namespace JiraSlackUnfurl\Event\Subscriber;
 
+use chobie\Jira;
 use Psr\Log\LoggerInterface;
 use SlackUnfurl\Event\Events;
 use SlackUnfurl\Event\UnfurlEvent;
@@ -12,13 +13,17 @@ class JiraUnfurler implements EventSubscriberInterface
 {
     use LoggerTrait;
 
+    /** @var Jira\Api */
+    private $api;
     /** @var string */
     private $domain;
 
     public function __construct(
+        Jira\Api $api,
         string $domain,
         LoggerInterface $logger
     ) {
+        $this->api = $api;
         $this->domain = $domain;
         $this->logger = $logger;
     }
@@ -36,9 +41,35 @@ class JiraUnfurler implements EventSubscriberInterface
     public function unfurl(UnfurlEvent $event)
     {
         foreach ($event->getMatchingLinks($this->domain) as $link) {
-            $url = $link['url'];
-            $unfurl = [];
-            $event->addUnfurl($url, $unfurl);
+            $unfurl = $this->getIssueUnfurl($link['url']);
+            if ($unfurl) {
+                $event->addUnfurl($link['url'], $unfurl);
+            }
         }
+    }
+
+    private function getIssueUnfurl(string $url)
+    {
+        $issue = $this->getIssueDetails($url);
+        $this->debug('jira', ['issue' => $issue]);
+
+        if (!$issue) {
+            return null;
+        }
+
+        return [
+            'title' => "<$url|#{$issue['key']}>: {$issue['fields']['summary']}",
+        ];
+    }
+
+    private function getIssueDetails(string $url)
+    {
+        if (!preg_match("#^https?://\Q{$this->domain}\E/browse/(?P<projectKey>[\d\w]+)-(?P<issueId>\d+)#", $url, $m)) {
+            return null;
+        }
+
+        $issueKey = "{$m['projectKey']}-{$m['issueId']}";
+
+        return $this->api->getIssue($issueKey)->getResult();
     }
 }
