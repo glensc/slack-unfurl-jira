@@ -19,8 +19,11 @@
         "php": "^7.1.3",
         "chobie/jira-api-restclient": "^2.0@dev"
     },
+    "conflicts": {
+        "glen/slack-unfurl": "<0.9.0"
+    },
     "require-dev": {
-        "glen/slack-unfurl": "~0.4.0",
+        "glen/slack-unfurl": "^0.9.0",
         "phpunit/phpunit": "^6.5",
         "symfony/var-dumper": "^4.0"
     }
