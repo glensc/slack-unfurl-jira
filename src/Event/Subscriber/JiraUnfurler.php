@@ -31,14 +31,14 @@ class JiraUnfurler implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             Events::SLACK_UNFURL => ['unfurl', 10],
         ];
     }
 
-    public function unfurl(UnfurlEvent $event)
+    public function unfurl(UnfurlEvent $event): void
     {
         foreach ($event->getMatchingLinks($this->domain) as $link) {
             $unfurl = $this->getIssueUnfurl($link['url']);
@@ -48,7 +48,7 @@ class JiraUnfurler implements EventSubscriberInterface
         }
     }
 
-    private function getIssueUnfurl(string $url)
+    private function getIssueUnfurl(string $url): ?array
     {
         $issue = $this->getIssueDetails($url);
         $this->debug('jira', ['issue' => $issue]);
@@ -62,7 +62,7 @@ class JiraUnfurler implements EventSubscriberInterface
         ];
     }
 
-    private function getIssueDetails(string $url)
+    private function getIssueDetails(string $url): ?array
     {
         if (!preg_match("#^https?://\Q{$this->domain}\E/browse/(?P<projectKey>[\d\w]+)-(?P<issueId>\d+)#", $url, $m)) {
             return null;
